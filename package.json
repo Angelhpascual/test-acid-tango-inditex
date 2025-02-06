@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write 'src/**/*.{ts,tsx,js,jsx,json,css,md}'",
-    "format:check": "prettier --check 'src/**/*.{ts,tsx,js,jsx,json,css,md}'"
+    "format:check": "prettier --check 'src/**/*.{ts,tsx,js,jsx,json,css,md}'",
+    "prepare": "mkdir -p .husky && husky install"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.3",
