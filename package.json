@@ -10,9 +10,11 @@
     "preview": "vite preview",
     "format": "prettier --write 'src/**/*.{ts,tsx,js,jsx,json,css,md}'",
     "format:check": "prettier --check 'src/**/*.{ts,tsx,js,jsx,json,css,md}'",
+
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage"
+
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.3",
@@ -53,6 +55,15 @@
     "typescript-eslint": "^8.18.2",
     "vite": "^6.0.5",
     "vitest": "^3.0.5"
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "**/*.{json,css,md}": [
+      "prettier --write"
+    ]
   },
   "packageManager": "pnpm@10.2.0+sha512.0d27364e0139c6aadeed65ada153135e0ca96c8da42123bd50047f961339dc7a758fc2e944b428f52be570d1bd3372455c1c65fa2e7aa0bfbf931190f9552001"
 }
