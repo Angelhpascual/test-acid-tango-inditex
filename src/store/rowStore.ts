@@ -13,7 +13,7 @@ type Product = {
 
 type Row = {
   id: string;
-  products: Product[];
+  products: Product[]; // Asegúrate de que aquí es un array de Product, no un array vacío
   alignment: Aligment;
 };
 
@@ -23,25 +23,24 @@ type RowStore = {
   removeRow: (id: string) => void;
   moveRow: (fromIndex: number, toIndex: number) => void;
   addProductToRow: (rowId: string, product: Product) => void;
-  removeProductFromRow: (rowId: string, productId: string) => void;
   moveProduct: (
     fromRowId: string,
     toRowId: string,
     productId: string,
     toIndex: number,
   ) => void;
+  removeProductFromRow: (rowId: string, productId: string) => void;
   setRowAligment: (rowId: string, alignment: Aligment) => void;
 };
 
 export const useRowStore = create<RowStore>((set) => ({
   rows: [],
   addRow: () =>
-    set((state) => ({
-      rows:
-        state.rows.length < 3
-          ? [...state.rows, { id: nanoid(), products: [], alignment: "center" }]
-          : state.rows,
-    })),
+    set((state) => {
+      console.log("➕ Agregando una nueva fila...");
+      const newRow: Row = { id: nanoid(), products: [], alignment: "center" }; // ✅ Aseguramos que es del tipo `Row`
+      return { rows: [...state.rows, newRow] };
+    }),
   removeRow: (id) =>
     set((state) => ({ rows: state.rows.filter((r) => r.id !== id) })),
   moveRow: (fromIndex, toIndex) =>
@@ -53,18 +52,36 @@ export const useRowStore = create<RowStore>((set) => ({
     }),
   addProductToRow: (rowId, product) =>
     set((state) => ({
-      rows: state.rows.map((r) =>
-        r.id === rowId ? { ...r, products: [...r.products, product] } : r,
+      rows: state.rows.map((row) =>
+        row.id === rowId
+          ? {
+              ...row,
+              products: [
+                ...row.products,
+                { ...product, id: nanoid() }, // ✅ Generamos un nuevo ID único
+              ],
+            }
+          : row,
       ),
     })),
   removeProductFromRow: (rowId, productId) =>
-    set((state) => ({
-      rows: state.rows.map((r) =>
-        r.id === rowId
-          ? { ...r, products: r.products.filter((p) => p.id !== productId) }
-          : r,
-      ),
-    })),
+    set((state) => {
+      console.log(`Intentando eliminar producto ${productId} de fila ${rowId}`);
+
+      return {
+        rows: state.rows.map((row) =>
+          row.id === rowId
+            ? {
+                ...row,
+                products: row.products.filter((p) => {
+                  console.log(`Comparando ${p.id} con ${productId}`);
+                  return p.id !== productId;
+                }),
+              }
+            : row,
+        ),
+      };
+    }),
   moveProduct: (fromRowId, toRowId, productId, toIndex) =>
     set((state) => {
       const fromRow = state.rows.find((row) => row.id === fromRowId);
@@ -99,6 +116,13 @@ export const useRowStore = create<RowStore>((set) => ({
     }),
   setRowAligment: (rowId, alignment) =>
     set((state) => ({
-      rows: state.rows.map((r) => (r.id === rowId ? { ...r, alignment } : r)),
+      rows: state.rows.map((row) =>
+        row.id === rowId ? { ...row, alignment } : row,
+      ),
     })),
 }));
+
+// // Exponer Zustand en la consola para depuración
+// if (typeof window !== "undefined") {
+//   ;(window as any).useRowStore = useRowStore
+// }
