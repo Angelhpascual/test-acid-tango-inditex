@@ -1,12 +1,16 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
 import Dashboard from "./components/Dashboard";
-import Sidebar from "./components/Sidebar";
 
-const App = () => {
+const App: React.FC = () => {
   return (
-    <>
-      <Sidebar />
-      <Dashboard />
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Dashboard />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 };
 
