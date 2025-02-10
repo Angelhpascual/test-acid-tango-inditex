@@ -34,7 +34,13 @@ type RowStore = {
 };
 
 export const useRowStore = create<RowStore>((set) => ({
-  rows: [],
+  rows: [
+    {
+      id: "default-row",
+      products: [],
+      alignment: "center",
+    },
+  ],
   addRow: () =>
     set((state) => {
       console.log("➕ Agregando una nueva fila...");
@@ -68,19 +74,21 @@ export const useRowStore = create<RowStore>((set) => ({
     set((state) => {
       console.log(`Intentando eliminar producto ${productId} de fila ${rowId}`);
 
-      return {
-        rows: state.rows.map((row) =>
-          row.id === rowId
-            ? {
-                ...row,
-                products: row.products.filter((p) => {
-                  console.log(`Comparando ${p.id} con ${productId}`);
-                  return p.id !== productId;
-                }),
-              }
-            : row,
-        ),
-      };
+      const updatedRows = state.rows.map((row) =>
+        row.id === rowId
+          ? {
+              ...row,
+              products: row.products.filter((p) => {
+                console.log(`Comparando ${p.id} con ${productId}`);
+                return p.id !== productId;
+              }),
+            }
+          : row,
+      );
+
+      console.log("🆕 Nuevo estado de filas:", updatedRows);
+
+      return { rows: updatedRows };
     }),
   moveProduct: (fromRowId, toRowId, productId, toIndex) =>
     set((state) => {
@@ -121,8 +129,3 @@ export const useRowStore = create<RowStore>((set) => ({
       ),
     })),
 }));
-
-// // Exponer Zustand en la consola para depuración
-// if (typeof window !== "undefined") {
-//   ;(window as any).useRowStore = useRowStore
-// }

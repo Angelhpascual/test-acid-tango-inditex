@@ -15,41 +15,50 @@ type ProductProps = {
 const ProductCard: React.FC<ProductProps> = ({ product, rowId }) => {
   const { removeProductFromRow } = useRowStore();
 
-  // ✅ Hacemos que cada producto sea draggable
+  console.log(
+    `🟢 Renderizando ProductCard para: ${product.name} en fila ${rowId}`,
+  );
+
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: product.id,
+    id: product.id as string,
     data: { rowId, product },
   });
 
-  const style = transform
+  const style: React.CSSProperties = transform
     ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
     : {};
 
   return (
     <div
       ref={setNodeRef}
-      style={{ ...style }}
+      style={style}
       {...listeners}
       {...attributes}
-      className="relative bg-white p-4 shadow-md rounded-md w-36 flex flex-col items-center cursor-grab"
+      className="relative bg-white p-3 shadow-md rounded-md w-36 flex flex-col items-center border border-gray-200 hover:shadow-lg transition-all cursor-grab"
     >
+      {/* 🔹 Imagen y detalles del producto */}
       <img
         src={product.image}
         alt={product.name}
         className="w-full h-24 object-contain rounded-md"
       />
-      <h2 className="text-sm font-bold mt-2">{product.name}</h2>
-      <p className="text-xs text-gray-600">{product.description}</p>
-      <p className="text-md font-semibold text-indigo-600 mt-2">
+      <h2 className="text-sm font-bold mt-2 text-gray-800">{product.name}</h2>
+      <p className="text-xs text-gray-500">{product.description}</p>
+      <p className="text-md font-semibold text-green-600 mt-2">
         💰${product.price.toFixed(2)}
       </p>
 
-      {/* Botón para eliminar */}
+      {/* 🔥 Botón de eliminar FUERA del área draggable */}
       <button
-        className="absolute top-1 right-1 text-red-500 hover:text-red-700"
-        onClick={() => removeProductFromRow(rowId, product.id)}
+        data-cancel-drag // ✅ Excluye este botón del drag & drop
+        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700 transition-all"
+        onClick={(e) => {
+          e.stopPropagation(); // ✅ Evita que el drag & drop interfiera
+          console.log(`🚀 Eliminando producto ${product.id} de fila ${rowId}`);
+          removeProductFromRow(rowId, product.id);
+        }}
       >
-        ❌
+        ✖
       </button>
     </div>
   );
