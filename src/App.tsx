@@ -1,12 +1,13 @@
-import Dashboard from "./components/Dashboard";
-import Sidebar from "./components/Sidebar";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Dashboard } from "./presentation/components/dashboard/Dashboard";
 
-const App = () => {
+const App: React.FC = () => {
   return (
-    <>
-      <Sidebar />
-      <Dashboard />
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+      </Routes>
+    </Router>
   );
 };
 
