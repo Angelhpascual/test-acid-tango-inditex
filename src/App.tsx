@@ -1,14 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout";
-import Dashboard from "./components/Dashboard";
+import { Dashboard } from "./presentation/components/dashboard/Dashboard";
 
 const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
-        </Route>
+        <Route path="/" element={<Dashboard />} />
       </Routes>
     </Router>
   );
