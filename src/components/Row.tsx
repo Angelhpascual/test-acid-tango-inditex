@@ -21,16 +21,14 @@ type RowProps = {
 
 const Row: React.FC<RowProps> = ({ row }) => {
   const { setRowAligment, addProductToRow } = useRowStore();
-  const { products } = useProductStore(); // ✅ Obtenemos la lista de productos
+  const { products } = useProductStore();
 
-  // ✅ Hacemos que la fila sea una zona donde se puedan soltar productos
-  const { setNodeRef } = useDroppable({
+  const { setNodeRef, isOver } = useDroppable({
     id: row.id,
   });
 
-  // ✅ Función para añadir un producto aleatorio
   const handleAddProduct = () => {
-    if (row.products.length >= 3) return; // ✅ Limita a 3 productos por fila
+    if (row.products.length >= 3) return;
     const randomProduct = products[Math.floor(Math.random() * products.length)];
     if (randomProduct) {
       addProductToRow(row.id, {
@@ -43,12 +41,13 @@ const Row: React.FC<RowProps> = ({ row }) => {
   return (
     <div
       ref={setNodeRef}
-      className="relative w-full bg-white shadow-md p-4 rounded-md"
+      className={`relative w-full p-4 rounded-md min-h-32 border border-gray-300 shadow-md transition-all 
+        ${isOver ? "bg-green-200 border-green-500" : "bg-white"}
+      `}
     >
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-lg font-semibold">Fila {row.id}</h2>
 
-        {/* Selector de alineación */}
         <select
           value={row.alignment}
           onChange={(e) =>
@@ -64,17 +63,15 @@ const Row: React.FC<RowProps> = ({ row }) => {
           <option value="right">➡ Derecha</option>
         </select>
 
-        {/* ✅ Botón para añadir producto */}
         <button
           onClick={handleAddProduct}
           className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-600 disabled:opacity-50"
-          disabled={row.products.length >= 3} // ✅ Se desactiva si ya hay 3 productos
+          disabled={row.products.length >= 3}
         >
           ➕ Añadir Producto
         </button>
       </div>
 
-      {/* Contenedor de productos con alineación */}
       <div
         className={`flex gap-4 ${
           row.alignment === "left"

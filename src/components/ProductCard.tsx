@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { useDraggable } from "@dnd-kit/core";
 import { useRowStore } from "../store/rowStore";
 
@@ -15,28 +16,32 @@ type ProductProps = {
 const ProductCard: React.FC<ProductProps> = ({ product, rowId }) => {
   const { removeProductFromRow } = useRowStore();
 
-  console.log(
-    `🟢 Renderizando ProductCard para: ${product.name} en fila ${rowId}`,
-  );
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: product.id as string,
+      data: { rowId, product },
+    });
 
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: product.id as string,
-    data: { rowId, product },
-  });
-
-  const style: React.CSSProperties = transform
-    ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
-    : {};
+  const motionStyle: React.CSSProperties = {
+    transform: transform
+      ? `translate(${transform.x}px, ${transform.y}px)`
+      : "none",
+    zIndex: isDragging ? 50 : 1,
+    position: isDragging ? "fixed" : "relative",
+    pointerEvents: isDragging ? "none" : "auto",
+  };
 
   return (
-    <div
+    <motion.div
       ref={setNodeRef}
-      style={style}
+      style={motionStyle}
       {...listeners}
       {...attributes}
       className="relative bg-white p-3 shadow-md rounded-md w-36 flex flex-col items-center border border-gray-200 hover:shadow-lg transition-all cursor-grab"
+      layout
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      whileDrag={{ scale: 1.1, opacity: 0.8 }}
     >
-      {/* 🔹 Imagen y detalles del producto */}
       <img
         src={product.image}
         alt={product.name}
@@ -48,19 +53,13 @@ const ProductCard: React.FC<ProductProps> = ({ product, rowId }) => {
         💰${product.price.toFixed(2)}
       </p>
 
-      {/* 🔥 Botón de eliminar FUERA del área draggable */}
       <button
-        data-cancel-drag // ✅ Excluye este botón del drag & drop
         className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700 transition-all"
-        onClick={(e) => {
-          e.stopPropagation(); // ✅ Evita que el drag & drop interfiera
-          console.log(`🚀 Eliminando producto ${product.id} de fila ${rowId}`);
-          removeProductFromRow(rowId, product.id);
-        }}
+        onClick={() => removeProductFromRow(rowId, product.id)}
       >
         ✖
       </button>
-    </div>
+    </motion.div>
   );
 };
 
