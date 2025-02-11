@@ -1,3 +1,43 @@
+# Product Grid Dashboard
+
+## Overview
+
+A React-based dashboard application for managing products in a grid layout. The application implements a clean architecture pattern with domain-driven design principles, allowing users to organize products in rows with various alignment options and drag-and-drop functionality.
+
+## Features
+
+- **Row Management**
+
+  - Create up to 3 rows
+  - Delete rows
+  - Drag and drop to reorder rows
+  - Adjust row alignment (left, center, right)
+
+- **Product Management**
+
+  - Add random products to rows (max 3 products per row)
+  - Remove products from rows
+  - Drag and drop products between rows
+  - Visual feedback when attempting to add products to full rows
+
+- **Data Persistence**
+  - Local storage implementation
+  - Reset functionality to clear all data
+
+## Technical Stack
+
+- **Frontend Framework**: React
+- **State Management**: Custom implementation with ViewModels
+- **Testing**: Vitest + React Testing Library
+- **UI Components**:
+  - `@dnd-kit/core` for drag and drop
+  - Motion for animations
+  - Tailwind CSS for styling
+
+## Architecture
+
+The project follows Clean Architecture principles with the following layers:
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
@@ -18,11 +58,11 @@ export default tseslint.config({
   languageOptions: {
     // other options...
     parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
       tsconfigRootDir: import.meta.dirname,
     },
   },
-})
+});
 ```
 
 - Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
@@ -31,11 +71,11 @@ export default tseslint.config({
 
 ```js
 // eslint.config.js
-import react from 'eslint-plugin-react'
+import react from "eslint-plugin-react";
 
 export default tseslint.config({
   // Set the react version
-  settings: { react: { version: '18.3' } },
+  settings: { react: { version: "18.3" } },
   plugins: {
     // Add the react plugin
     react,
@@ -44,7 +84,7 @@ export default tseslint.config({
     // other rules...
     // Enable its recommended rules
     ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
+    ...react.configs["jsx-runtime"].rules,
   },
-})
+});
 ```
