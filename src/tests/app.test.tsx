@@ -47,8 +47,15 @@ const localStorageMock = {
   removeItem: vi.fn(),
   length: 0,
   key: vi.fn(),
-};
-window.localStorage = localStorageMock as Storage;
+} as Storage;
+
+// Asignar el mock antes de las pruebas
+beforeEach(() => {
+  Object.defineProperty(window, "localStorage", {
+    value: localStorageMock,
+    writable: true,
+  });
+});
 
 describe("App Integration Tests", () => {
   let productRepository: IProductRepository;
