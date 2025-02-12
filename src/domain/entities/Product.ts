@@ -15,6 +15,9 @@ export class Product {
     if (this.price <= 0) throw new Error("Price must be positive");
     if (!this.description) throw new Error("Description is required");
     if (!this.image) throw new Error("Image URL is required");
+    if (!this.name.trim()) {
+      throw new Error("Name is required");
+    }
   }
 
   static create(props: Omit<Product, "id"> & { id?: string }): Product {

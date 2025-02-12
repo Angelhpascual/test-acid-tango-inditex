@@ -124,58 +124,69 @@ export const Dashboard: React.FC<Props> = ({ viewModel }) => {
   };
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <button
-          onClick={handleReset}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
-        >
-          Reset All
-        </button>
-      </div>
-      <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="p-8 min-w-[1024px] max-w-[1200px] mx-auto overflow-x-auto">
-          <div className="flex justify-between items-center mb-6">
-            <button
-              onClick={handleAddRow}
-              disabled={rows.length >= 3}
-              className={`px-4 py-2 rounded ${
-                rows.length >= 3
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
-              } text-white`}
-            >
-              Add Row ({rows.length}/3)
-            </button>
-            {rows.length >= 3 && (
-              <p className="text-red-500 text-sm">
-                Maximum number of rows reached
-              </p>
-            )}
-          </div>
-          <div className="space-y-4">
-            {rows.map((row) => (
-              <RowItem
-                key={row.id}
-                row={row}
-                onAlignmentChange={handleAlignmentChange}
-                onAddProduct={handleAddRandomProduct}
-                onRemoveProduct={handleRemoveProduct}
-              />
-            ))}
-          </div>
+    <div className="min-h-screen p-4 bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-8 bg-white/80 p-6 rounded-2xl backdrop-blur-sm shadow-lg">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-400 to-purple-600 bg-clip-text text-transparent">
+            Inditex Row Experience
+          </h1>
+          <button
+            onClick={handleReset}
+            className="bg-red-400 hover:bg-red-500 text-white px-6 py-3 rounded-xl 
+            shadow-md hover:shadow-lg transition-all duration-300 font-medium"
+          >
+            Reset All
+          </button>
         </div>
-        <DragOverlay>
-          {activeProduct && (
-            <ProductCard
-              product={activeProduct.product}
-              rowId={activeProduct.fromRowId}
-              isDragging={isDragging}
-            />
-          )}
-        </DragOverlay>
-      </DndContext>
+
+        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+          <div className="space-y-6">
+            <div className="flex justify-between items-center mb-8">
+              <button
+                onClick={handleAddRow}
+                disabled={rows.length >= 3}
+                className={`
+                  px-6 py-3 rounded-xl font-medium shadow-md
+                  transition-all duration-300
+                  ${
+                    rows.length >= 3
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-gradient-to-r from-blue-400 to-purple-500 hover:from-blue-500 hover:to-purple-600 text-white hover:shadow-lg"
+                  }
+                `}
+              >
+                Add Row ({rows.length}/3)
+              </button>
+              {rows.length >= 3 && (
+                <p className="text-red-400 text-sm font-medium">
+                  Maximum number of rows reached
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-6">
+              {rows.map((row) => (
+                <RowItem
+                  key={row.id}
+                  row={row}
+                  onAlignmentChange={handleAlignmentChange}
+                  onAddProduct={handleAddRandomProduct}
+                  onRemoveProduct={handleRemoveProduct}
+                />
+              ))}
+            </div>
+          </div>
+          <DragOverlay>
+            {activeProduct && (
+              <ProductCard
+                product={activeProduct.product}
+                rowId={activeProduct.fromRowId}
+                isDragging={isDragging}
+              />
+            )}
+          </DragOverlay>
+        </DndContext>
+      </div>
     </div>
   );
 };

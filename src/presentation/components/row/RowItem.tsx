@@ -6,9 +6,9 @@ import { motion } from "framer-motion";
 
 type RowItemProps = {
   row: Row;
-  onAlignmentChange: (rowId: string, alignment: Alignment) => void;
-  onAddProduct: (rowId: string) => void;
-  onRemoveProduct: (rowId: string, productId: string) => void;
+  onAlignmentChange: (rowId: string, alignment: Alignment) => Promise<void>;
+  onAddProduct: (rowId: string) => Promise<void>;
+  onRemoveProduct: (rowId: string, productId: string) => Promise<void>;
 };
 
 export const RowItem: React.FC<RowItemProps> = ({
@@ -45,13 +45,13 @@ export const RowItem: React.FC<RowItemProps> = ({
     <motion.div
       ref={setNodeRef}
       className={`
-        border-2 p-6 rounded-xl
+        border-2 p-6 rounded-2xl
         ${getBorderColor()} 
         ${getBackgroundColor()}
-        shadow-sm h-[320px] min-w-[1024px] w-full
+        shadow-lg backdrop-blur-sm
+        h-[320px] min-w-[1024px] w-full
         transition-all duration-300
-        relative
-        flex flex-col
+        relative flex flex-col
       `}
     >
       <div className="absolute top-4 right-4 flex flex-col gap-2 w-28">
@@ -59,9 +59,11 @@ export const RowItem: React.FC<RowItemProps> = ({
           <button
             onClick={() => onAddProduct(row.id)}
             className={`
-              px-4 py-1.5 rounded-lg text-sm font-medium w-full
+              px-4 py-2 rounded-xl text-sm font-medium w-full
               transition-all duration-300
-              bg-green-500 hover:bg-green-600 active:bg-green-700 text-white
+              bg-gradient-to-r from-green-400 to-emerald-500 
+              hover:from-green-500 hover:to-emerald-600
+              text-white shadow-md hover:shadow-lg
             `}
           >
             Add Product
@@ -72,9 +74,9 @@ export const RowItem: React.FC<RowItemProps> = ({
           onChange={(e) =>
             onAlignmentChange(row.id, e.target.value as Alignment)
           }
-          className="border rounded-lg px-3 py-1.5 bg-white shadow-sm text-sm
-          hover:border-blue-500 focus:border-blue-500 focus:ring-2 
-          focus:ring-blue-200 transition-all w-full"
+          className="border rounded-xl px-4 py-2 bg-white/80 shadow-md text-sm
+          hover:border-purple-400 focus:border-purple-400 focus:ring-2 
+          focus:ring-purple-200 transition-all w-full"
         >
           <option value={Alignment.LEFT}>Left</option>
           <option value={Alignment.CENTER}>Center</option>
