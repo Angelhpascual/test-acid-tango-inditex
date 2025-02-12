@@ -3,7 +3,6 @@ import { vi, beforeEach } from "vitest";
 import React from "react";
 import { HTMLMotionProps } from "framer-motion";
 
-// Mock de Framer Motion
 vi.mock("framer-motion", () => ({
   motion: {
     div: (props: HTMLMotionProps<"div">) => React.createElement("div", props),
@@ -11,7 +10,6 @@ vi.mock("framer-motion", () => ({
   AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-// Mock de @dnd-kit/core
 vi.mock("@dnd-kit/core", () => ({
   DndContext: ({ children }: { children: React.ReactNode }) => children,
   DragOverlay: ({ children }: { children: React.ReactNode }) => children,
@@ -28,7 +26,6 @@ vi.mock("@dnd-kit/core", () => ({
   }),
 }));
 
-// Mock de localStorage
 const storageMock = new Map<string, string>();
 
 const localStorageMock = {
@@ -44,7 +41,6 @@ Object.defineProperty(window, "localStorage", {
   value: localStorageMock,
 });
 
-// Limpiar el storage antes de cada test
 beforeEach(() => {
   storageMock.clear();
   vi.clearAllMocks();
