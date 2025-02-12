@@ -26,4 +26,14 @@ export class ProductRepository implements IProductRepository {
       this.products[index] = product;
     }
   }
+
+  async getRandom(): Promise<Product> {
+    const products = await this.getAll();
+    const randomIndex = Math.floor(Math.random() * products.length);
+    return products[randomIndex];
+  }
+
+  async reset(): Promise<void> {
+    this.products = [];
+  }
 }

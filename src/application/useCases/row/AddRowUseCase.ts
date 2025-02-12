@@ -23,9 +23,9 @@ export class AddRowUseCase {
       alignment: Alignment.CENTER,
       products: [],
     });
-    console.log("AddRowUseCase.execute - Row created:", newRow); // Debug log
+    console.log("AddRowUseCase.execute - Row created:", newRow);
 
     await this.rowRepository.save(newRow);
-    console.log("AddRowUseCase.execute - Row saved"); // Debug log
+    console.log("AddRowUseCase.execute - Row saved");
   }
 }

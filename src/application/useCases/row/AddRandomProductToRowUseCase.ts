@@ -1,46 +1,51 @@
-import { IRowRepository } from "../../ports/IRowRepository";
 import { IProductRepository } from "../../ports/IProductRepository";
-import { Row } from "../../../domain/entities/Row";
-import { Alignment } from "../../../domain/valueObjects/Alignment";
+import { IRowRepository } from "../../ports/IRowRepository";
 import { Product } from "../../../domain/entities/Product";
+import { nanoid } from "nanoid";
 
 export class AddRandomProductToRowUseCase {
   constructor(
-    private readonly rowRepository: IRowRepository,
     private readonly productRepository: IProductRepository,
+    private readonly rowRepository: IRowRepository,
   ) {
     if (!rowRepository) throw new Error("Row repository is required");
     if (!productRepository) throw new Error("Product repository is required");
   }
 
   async execute(rowId: string): Promise<void> {
-    const row = await this.rowRepository.getById(rowId);
-    if (!row) throw new Error("Row not found");
+    try {
+      const row = await this.rowRepository.getById(rowId);
+      if (!row) throw new Error(`Row with id ${rowId} not found`);
 
-    if (row.products.length >= 3) {
-      throw new Error("Row cannot have more than 3 products");
+      if (row.products.length >= 3) {
+        throw new Error("Row cannot have more than 3 products");
+      }
+
+      const randomProduct = await this.productRepository.getRandom();
+      if (!randomProduct)
+        throw new Error("No products available in the catalog");
+
+      const newProduct = new Product(
+        nanoid(),
+        randomProduct.name,
+        randomProduct.price,
+        randomProduct.description,
+        randomProduct.image,
+      );
+
+      const updatedRow = row.addProduct(newProduct);
+      await this.rowRepository.update(updatedRow);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message.includes("Row cannot have more than 3 products")
+      ) {
+        throw error;
+      }
+      if (error instanceof Error) {
+        throw new Error(`Failed to add random product: ${error.message}`);
+      }
+      throw error;
     }
-
-    const products = await this.productRepository.getAll();
-    const randomProduct = products[Math.floor(Math.random() * products.length)];
-
-    if (!randomProduct) throw new Error("No products available");
-
-    const updatedRow = Row.create({
-      id: row.id,
-      products: [
-        ...row.products,
-        new Product(
-          crypto.randomUUID(),
-          randomProduct.name,
-          randomProduct.price,
-          randomProduct.description,
-          randomProduct.image,
-        ),
-      ],
-      alignment: row.alignment as Alignment,
-    });
-
-    await this.rowRepository.update(updatedRow);
   }
 }

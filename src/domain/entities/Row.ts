@@ -1,48 +1,64 @@
+import { nanoid } from "nanoid";
 import { Product } from "./Product";
 import { Alignment } from "../valueObjects/Alignment";
-import { Row as RowType } from "../types/Row";
 
-export class Row implements RowType {
-  private readonly MAX_PRODUCTS = 3;
+interface RowProps {
+  id?: string;
+  products?: Product[];
+  alignment?: Alignment;
+}
 
-  constructor(
+interface ProductJSON {
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  image: string;
+}
+
+interface RowJSON {
+  id: string;
+  products: ProductJSON[];
+  alignment: string;
+}
+
+export class Row {
+  private constructor(
     public readonly id: string,
-    public readonly products: Product[],
-    public readonly alignment: Alignment,
-  ) {
-    if (products.length > this.MAX_PRODUCTS) {
-      throw new Error(
-        `Row cannot have more than ${this.MAX_PRODUCTS} products`,
-      );
-    }
-  }
+    public readonly products: Product[] = [],
+    public readonly alignment: Alignment = Alignment.CENTER,
+  ) {}
 
-  static create(props: {
-    id?: string;
-    products?: Product[];
-    alignment?: Alignment;
-  }): Row {
+  static create(params: Partial<RowProps> = {}): Row {
     return new Row(
-      props.id || crypto.randomUUID(),
-      props.products || [],
-      props.alignment || Alignment.CENTER,
+      params.id ?? nanoid(),
+      params.products || [],
+      params.alignment || Alignment.CENTER,
     );
   }
 
   canAddProduct(): boolean {
-    return this.products.length < this.MAX_PRODUCTS;
+    return this.products.length < 3;
   }
 
   addProduct(product: Product): Row {
-    if (!this.canAddProduct()) {
-      throw new Error(
-        `Cannot add more than ${this.MAX_PRODUCTS} products to a row`,
-      );
+    if (!product.id || !product.name || !product.price) {
+      throw new Error("Invalid product data");
+    }
+    if (this.products.length >= 3) {
+      throw new Error("Cannot add more than 3 products");
+    }
+    if (this.findProduct(product.id)) {
+      throw new Error("Product already exists");
     }
     return new Row(this.id, [...this.products, product], this.alignment);
   }
 
   removeProduct(productId: string): Row {
+    const product = this.findProduct(productId);
+    if (!product) {
+      throw new Error("Product not found");
+    }
     return new Row(
       this.id,
       this.products.filter((p) => p.id !== productId),
@@ -51,6 +67,24 @@ export class Row implements RowType {
   }
 
   updateAlignment(alignment: Alignment): Row {
+    if (!Object.values(Alignment).includes(alignment)) {
+      throw new Error("Invalid alignment value");
+    }
     return new Row(this.id, this.products, alignment);
+  }
+
+  findProduct(productId: string): Product | null {
+    return this.products.find((p) => p.id === productId) ?? null;
+  }
+
+  static fromJSON(json: RowJSON): Row {
+    return new Row(
+      json.id,
+      (json.products || []).map(
+        (p: ProductJSON) =>
+          new Product(p.id, p.name, p.price, p.description, p.image),
+      ),
+      (json.alignment as Alignment) || Alignment.CENTER,
+    );
   }
 }

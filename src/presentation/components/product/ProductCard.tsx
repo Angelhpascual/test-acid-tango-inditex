@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { useDraggable } from "@dnd-kit/core";
 import { Product } from "../../../domain/entities/Product";
 
@@ -35,6 +35,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {onRemove && (
         <button
           onClick={onRemove}
+          aria-label="Remove product"
           className="absolute -top-2 -right-2 z-10 w-6 h-6
           bg-red-500 text-white rounded-full
           opacity-0 group-hover:opacity-100
@@ -47,6 +48,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -69,7 +71,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {...listeners}
         {...attributes}
         className={`
-          relative w-56 bg-white rounded-lg shadow-md p-3
+          motion-div relative w-56 bg-white rounded-lg shadow-md p-3
           hover:shadow-lg transition-all duration-300 
           cursor-grab active:cursor-grabbing
           ${isDragging ? "opacity-50" : ""}
@@ -87,7 +89,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <h3 className="text-base font-bold text-gray-800 truncate">
             {product.name}
           </h3>
-          <p className="text-gray-600 text-xs line-clamp-2 h-8">
+          <p
+            data-testid="product-description"
+            className="text-gray-600 text-xs line-clamp-2 h-8"
+          >
             {product.description}
           </p>
           <p className="text-lg font-bold text-blue-600">

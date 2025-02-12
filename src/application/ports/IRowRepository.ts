@@ -6,6 +6,6 @@ export interface IRowRepository {
   save(row: Row): Promise<void>;
   delete(id: string): Promise<void>;
   update(row: Row): Promise<void>;
-  updateOrder(rowIds: string[]): Promise<void>;
+  updateOrder(rows: Row[]): Promise<void>;
   reset(): Promise<void>;
 }
