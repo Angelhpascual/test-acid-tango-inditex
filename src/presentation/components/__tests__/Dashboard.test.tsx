@@ -36,25 +36,29 @@ describe("Dashboard", () => {
     getRows: ReturnType<typeof vi.fn>;
   };
 
-  const mockRowRepository = {
-    getAll: vi.fn().mockResolvedValue([]),
-    getById: vi.fn(),
-    save: vi.fn(),
-    delete: vi.fn(),
-    update: vi.fn(),
-    updateOrder: vi.fn(),
-    reset: vi.fn(),
-  } as unknown as IRowRepository;
+  const createMockRepositories = () => {
+    const mockProductRepo = {
+      getAll: vi.fn().mockResolvedValue([]),
+      getById: vi.fn(),
+      getRandom: vi.fn(),
+      save: vi.fn(),
+      delete: vi.fn(),
+      update: vi.fn(),
+      reset: vi.fn(),
+    } as unknown as IProductRepository;
 
-  const mockProductRepository = {
-    getAll: vi.fn().mockResolvedValue([]),
-    getById: vi.fn(),
-    getRandom: vi.fn(),
-    save: vi.fn(),
-    delete: vi.fn(),
-    update: vi.fn(),
-    reset: vi.fn(),
-  } as unknown as IProductRepository;
+    const mockRowRepo = {
+      getAll: vi.fn().mockResolvedValue([]),
+      getById: vi.fn(),
+      save: vi.fn(),
+      delete: vi.fn(),
+      update: vi.fn(),
+      updateOrder: vi.fn(),
+      reset: vi.fn(),
+    } as unknown as IRowRepository;
+
+    return { mockProductRepo, mockRowRepo };
+  };
 
   it("should render rows from viewModel", async () => {
     render(<Dashboard viewModel={mockViewModel} />);
@@ -69,10 +73,13 @@ describe("Dashboard", () => {
   });
 
   it("should call resetAll when reset button is clicked", async () => {
-    render(<Dashboard viewModel={mockViewModel} />);
+    const { mockProductRepo, mockRowRepo } = createMockRepositories();
+    const viewModel = new DashboardViewModel(mockProductRepo, mockRowRepo);
+    render(<Dashboard viewModel={viewModel} />);
     const resetButton = await screen.findByText(/reset all/i);
     fireEvent.click(resetButton);
-    expect(mockViewModel.resetAll).toHaveBeenCalled();
+    expect(mockProductRepo.reset).toHaveBeenCalled();
+    expect(mockRowRepo.reset).toHaveBeenCalled();
   });
 
   it("should call addRandomProductToRow when add product button is clicked", async () => {
@@ -111,26 +118,7 @@ describe("Dashboard", () => {
   });
 
   it("should render dashboard", () => {
-    const mockProductRepo = {
-      getAll: vi.fn().mockResolvedValue([]),
-      getById: vi.fn(),
-      getRandom: vi.fn(),
-      save: vi.fn(),
-      delete: vi.fn(),
-      update: vi.fn(),
-      reset: vi.fn(),
-    } as unknown as IProductRepository;
-
-    const mockRowRepo = {
-      getAll: vi.fn().mockResolvedValue([]),
-      getById: vi.fn(),
-      save: vi.fn(),
-      delete: vi.fn(),
-      update: vi.fn(),
-      updateOrder: vi.fn(),
-      reset: vi.fn(),
-    } as unknown as IRowRepository;
-
+    const { mockProductRepo, mockRowRepo } = createMockRepositories();
     const viewModel = new DashboardViewModel(mockProductRepo, mockRowRepo);
     render(<Dashboard viewModel={viewModel} />);
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
