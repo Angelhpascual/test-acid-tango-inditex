@@ -27,9 +27,13 @@ export class RowRepository implements IRowRepository {
     }
   }
 
-  async updateOrder(rowIds: string[]): Promise<void> {
-    this.rows = rowIds
-      .map((id) => this.rows.find((r) => r.id === id))
-      .filter((r): r is Row => r !== undefined);
+  async updateOrder(rows: Row[]): Promise<void> {
+    this.rows = rows
+      .map((row) => this.rows.find((r) => r.id === row.id))
+      .filter((row): row is Row => row !== undefined);
+  }
+
+  async reset(): Promise<void> {
+    this.rows = [];
   }
 }

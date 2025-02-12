@@ -1,7 +1,7 @@
 import { Product } from "../../../domain/entities/Product";
 import { ProductCard } from "../product/ProductCard";
 import { Alignment } from "../../../domain/valueObjects/Alignment";
-import { AnimatePresence } from "motion/react";
+import { AnimatePresence } from "framer-motion";
 
 type ProductListProps = {
   products: Product[];

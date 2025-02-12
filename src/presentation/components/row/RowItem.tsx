@@ -2,7 +2,7 @@ import { useDroppable } from "@dnd-kit/core";
 import { Row } from "../../../domain/entities/Row";
 import { Alignment } from "../../../domain/valueObjects/Alignment";
 import { ProductList } from "../product/ProductList";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 
 type RowItemProps = {
   row: Row;
@@ -17,28 +17,29 @@ export const RowItem: React.FC<RowItemProps> = ({
   onAddProduct,
   onRemoveProduct,
 }) => {
-  const isRowFull = row.products.length >= 3;
   const { setNodeRef, isOver, active } = useDroppable({
-    id: row.id,
-    data: {
-      rowId: row.id,
-    },
+    id: row?.id,
   });
+
+  // Añadir verificación
+  if (!row || !row.products) {
+    return null; // O un componente de loading/error
+  }
 
   // Solo mostrar efectos visuales si hay un elemento siendo arrastrado
   const isHovering = isOver && active;
 
   const getBorderColor = () => {
     if (!isHovering) return "border-gray-200";
-    return isRowFull ? "border-red-400" : "border-green-400";
+    return "border-green-400";
   };
 
   const getBackgroundColor = () => {
     if (!isHovering) return "bg-white";
-    return isRowFull
-      ? "bg-red-50 transition-colors duration-200"
-      : "bg-green-50 transition-colors duration-200";
+    return "bg-green-50 transition-colors duration-200";
   };
+
+  const canAddProduct = row.products.length < 3;
 
   return (
     <motion.div
@@ -54,21 +55,18 @@ export const RowItem: React.FC<RowItemProps> = ({
       `}
     >
       <div className="absolute top-4 right-4 flex flex-col gap-2 w-28">
-        <button
-          onClick={() => onAddProduct(row.id)}
-          disabled={isRowFull}
-          className={`
-            px-4 py-1.5 rounded-lg text-sm font-medium w-full
-            transition-all duration-300
-            ${
-              isRowFull
-                ? "bg-gray-300 cursor-not-allowed"
-                : "bg-green-500 hover:bg-green-600 active:bg-green-700 text-white"
-            }
-          `}
-        >
-          Add Product
-        </button>
+        {canAddProduct && (
+          <button
+            onClick={() => onAddProduct(row.id)}
+            className={`
+              px-4 py-1.5 rounded-lg text-sm font-medium w-full
+              transition-all duration-300
+              bg-green-500 hover:bg-green-600 active:bg-green-700 text-white
+            `}
+          >
+            Add Product
+          </button>
+        )}
         <select
           value={row.alignment}
           onChange={(e) =>
@@ -91,7 +89,7 @@ export const RowItem: React.FC<RowItemProps> = ({
           onRemoveProduct={(productId) => onRemoveProduct(row.id, productId)}
         />
       </div>
-      {isHovering && isRowFull && (
+      {isHovering && !canAddProduct && (
         <div
           className="absolute inset-0 flex items-center justify-center 
         bg-red-100/50 rounded-xl backdrop-blur-sm"

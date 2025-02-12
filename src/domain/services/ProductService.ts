@@ -2,7 +2,7 @@ import { Product } from "../entities/Product";
 import { Row } from "../entities/Row";
 
 export class ProductService {
-  static canMoveProduct(product: Product, targetRow: Row): boolean {
+  static canMoveProduct(_product: Product, targetRow: Row): boolean {
     return targetRow.canAddProduct();
   }
 

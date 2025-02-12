@@ -4,6 +4,7 @@ import { Product } from "../../domain/entities/Product";
 import { Row } from "../../domain/entities/Row";
 import { AddProductUseCase } from "../../application/useCases/product/AddProductUseCase";
 import { AddRowUseCase } from "../../application/useCases/row/AddRowUseCase";
+import { RemoveRowUseCase } from "../../application/useCases/row/RemoveRowUseCase";
 import { Alignment } from "../../domain/valueObjects/Alignment";
 import { MoveProductUseCase } from "../../application/useCases/product/MoveProductUseCase";
 import { UpdateRowAlignmentUseCase } from "../../application/useCases/row/UpdateRowAlignmentUseCase";
@@ -15,6 +16,7 @@ export class DashboardViewModel {
   private updateRowAlignmentUseCase: UpdateRowAlignmentUseCase;
   private removeProductUseCase: RemoveProductUseCase;
   private readonly addRowUseCase: AddRowUseCase;
+  private readonly removeRowUseCase: RemoveRowUseCase;
   private readonly addRandomProductToRowUseCase: AddRandomProductToRowUseCase;
 
   constructor(
@@ -30,9 +32,10 @@ export class DashboardViewModel {
     );
     this.removeProductUseCase = new RemoveProductUseCase(rowRepository);
     this.addRowUseCase = new AddRowUseCase(rowRepository);
+    this.removeRowUseCase = new RemoveRowUseCase(rowRepository);
     this.addRandomProductToRowUseCase = new AddRandomProductToRowUseCase(
-      rowRepository,
       productRepository,
+      rowRepository,
     );
   }
 
@@ -56,16 +59,20 @@ export class DashboardViewModel {
     console.log("DashboardViewModel.addRow - Row added"); // Debug log
   }
 
+  async deleteRow(rowId: string): Promise<void> {
+    await this.removeRowUseCase.execute(rowId);
+  }
+
   async updateRowAlignment(rowId: string, alignment: Alignment): Promise<void> {
     await this.updateRowAlignmentUseCase.execute(rowId, alignment);
   }
 
   async moveProduct(
+    productId: string,
     fromRowId: string,
     toRowId: string,
-    productId: string,
   ): Promise<void> {
-    await this.moveProductUseCase.execute(fromRowId, toRowId, productId);
+    await this.moveProductUseCase.execute(productId, fromRowId, toRowId);
   }
 
   async removeProduct(rowId: string, productId: string): Promise<void> {
@@ -81,5 +88,14 @@ export class DashboardViewModel {
       this.productRepository.reset(),
       this.rowRepository.reset(),
     ]);
+  }
+
+  async updateRowOrder(rowIds: string[]): Promise<void> {
+    const rows = await this.rowRepository.getAll();
+    const orderedRows = rowIds
+      .map((id) => rows.find((row) => row.id === id))
+      .filter((row): row is Row => row !== undefined);
+
+    await this.rowRepository.updateOrder(orderedRows);
   }
 }

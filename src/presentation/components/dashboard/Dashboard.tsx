@@ -5,19 +5,24 @@ import {
   DragOverlay,
   DragStartEvent,
 } from "@dnd-kit/core";
-import { container } from "../../../infrastructure/di/container";
 import { Product } from "../../../domain/entities/Product";
 import { Row } from "../../../domain/entities/Row";
 import { Alignment } from "../../../domain/valueObjects/Alignment";
 import { RowItem } from "../row/RowItem";
 import { ProductCard } from "../product/ProductCard";
+import { DashboardViewModel } from "../../viewModels/DashboardViewModel";
 
-export const Dashboard: React.FC = () => {
+interface Props {
+  viewModel: DashboardViewModel;
+}
+
+export const Dashboard: React.FC<Props> = ({ viewModel }) => {
   const [rows, setRows] = useState<Row[]>([]);
-  const [activeProduct, setActiveProduct] = useState<Product | null>(null);
-  const [activeRowId, setActiveRowId] = useState<string | null>(null);
+  const [activeProduct, setActiveProduct] = useState<{
+    product: Product;
+    fromRowId: string;
+  } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const viewModel = container.dashboardViewModel;
 
   const loadData = useCallback(async () => {
     console.log("Dashboard.loadData - Starting");
@@ -55,8 +60,7 @@ export const Dashboard: React.FC = () => {
     const { active } = event;
     const product = active.data.current?.product as Product;
     const rowId = active.data.current?.rowId as string;
-    setActiveProduct(product);
-    setActiveRowId(rowId);
+    setActiveProduct({ product, fromRowId: rowId });
     setIsDragging(true);
   };
 
@@ -72,7 +76,6 @@ export const Dashboard: React.FC = () => {
     if (!active || !over) {
       setIsDragging(false);
       setActiveProduct(null);
-      setActiveRowId(null);
       return;
     }
 
@@ -87,9 +90,9 @@ export const Dashboard: React.FC = () => {
           productId: active.id,
         });
         await viewModel.moveProduct(
+          active.id as string,
           sourceRowId,
           targetRowId,
-          active.id as string,
         );
         await loadData();
       } catch (error) {
@@ -99,12 +102,15 @@ export const Dashboard: React.FC = () => {
 
     setIsDragging(false);
     setActiveProduct(null);
-    setActiveRowId(null);
   };
 
-  const handleAddProduct = async (rowId: string) => {
-    await viewModel.addRandomProductToRow(rowId);
-    await loadData();
+  const handleAddRandomProduct = async (rowId: string) => {
+    try {
+      await viewModel.addRandomProductToRow(rowId);
+      await loadData();
+    } catch (error) {
+      console.error("Error adding random product:", error);
+    }
   };
 
   const handleRemoveProduct = async (rowId: string, productId: string) => {
@@ -154,7 +160,7 @@ export const Dashboard: React.FC = () => {
                 key={row.id}
                 row={row}
                 onAlignmentChange={handleAlignmentChange}
-                onAddProduct={handleAddProduct}
+                onAddProduct={handleAddRandomProduct}
                 onRemoveProduct={handleRemoveProduct}
               />
             ))}
@@ -163,8 +169,8 @@ export const Dashboard: React.FC = () => {
         <DragOverlay>
           {activeProduct && (
             <ProductCard
-              product={activeProduct}
-              rowId={activeRowId || ""}
+              product={activeProduct.product}
+              rowId={activeProduct.fromRowId}
               isDragging={isDragging}
             />
           )}
