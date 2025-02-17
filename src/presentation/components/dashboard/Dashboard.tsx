@@ -144,24 +144,14 @@ export const Dashboard: React.FC<Props> = ({ viewModel }) => {
             <div className="flex justify-between items-center mb-8">
               <button
                 onClick={handleAddRow}
-                disabled={rows.length >= 3}
                 className={`
                   px-6 py-3 rounded-xl font-medium shadow-md
                   transition-all duration-300
-                  ${
-                    rows.length >= 3
-                      ? "bg-gray-300 cursor-not-allowed"
-                      : "bg-gradient-to-r from-blue-400 to-purple-500 hover:from-blue-500 hover:to-purple-600 text-white hover:shadow-lg"
-                  }
+                  bg-gradient-to-r from-blue-400 to-purple-500 hover:from-blue-500 hover:to-purple-600 text-white hover:shadow-lg
                 `}
               >
-                Add Row ({rows.length}/3)
+                Add Row ({rows.length})
               </button>
-              {rows.length >= 3 && (
-                <p className="text-red-400 text-sm font-medium">
-                  Maximum number of rows reached
-                </p>
-              )}
             </div>
 
             <div className="space-y-6">
