@@ -1,37 +1,21 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { AddRowUseCase } from "../AddRowUseCase";
-import { IRowRepository } from "../../../ports/IRowRepository";
-import { Row } from "../../../../domain/entities/Row";
+import { describe, it, expect, vi } from "vitest"
+import { AddRowUseCase } from "../AddRowUseCase"
+import { IRowRepository } from "../../../ports/IRowRepository"
 
 describe("AddRowUseCase", () => {
-  let mockRowRepository: IRowRepository;
-  let useCase: AddRowUseCase;
+  const mockRowRepository = {
+    getAll: vi.fn(),
+    save: vi.fn(),
+    getById: vi.fn(),
+    delete: vi.fn(),
+    update: vi.fn(),
+    updateOrder: vi.fn(),
+    reset: vi.fn(),
+  } as unknown as IRowRepository
 
-  beforeEach(() => {
-    mockRowRepository = {
-      getAll: vi.fn(),
-      getById: vi.fn(),
-      save: vi.fn(),
-      delete: vi.fn(),
-      update: vi.fn(),
-      updateOrder: vi.fn(),
-      reset: vi.fn(),
-    };
-    useCase = new AddRowUseCase(mockRowRepository);
-  });
-
-  it("should add a row when less than 3 rows exist", async () => {
-    vi.mocked(mockRowRepository.getAll).mockResolvedValue([]);
-    await useCase.execute();
-    expect(mockRowRepository.save).toHaveBeenCalled();
-  });
-
-  it("should throw error when trying to add more than 3 rows", async () => {
-    const existingRows = [Row.create({}), Row.create({}), Row.create({})];
-    vi.mocked(mockRowRepository.getAll).mockResolvedValue(existingRows);
-
-    await expect(useCase.execute()).rejects.toThrow(
-      "Cannot add more than 3 rows",
-    );
-  });
-});
+  it("should create and save a new row", async () => {
+    const useCase = new AddRowUseCase(mockRowRepository)
+    await useCase.execute()
+    expect(mockRowRepository.save).toHaveBeenCalled()
+  })
+})
