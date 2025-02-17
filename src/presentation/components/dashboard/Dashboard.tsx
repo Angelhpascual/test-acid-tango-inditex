@@ -124,7 +124,10 @@ export const Dashboard: React.FC<Props> = ({ viewModel }) => {
   }
 
   return (
-    <div className="min-h-screen p-4 bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100">
+    <div
+      data-testid="dashboard"
+      className="min-h-screen p-4 bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100"
+    >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8 bg-white/80 p-6 rounded-2xl backdrop-blur-sm shadow-lg">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-400 to-purple-600 bg-clip-text text-transparent">

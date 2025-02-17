@@ -71,6 +71,7 @@ describe("Dashboard", () => {
     fireEvent.click(addButton)
     expect(mockViewModel.addRow).toHaveBeenCalled()
   })
+<<<<<<< HEAD
 
   it("should allow adding more than 3 rows", async () => {
     const { mockProductRepo, mockRowRepo } = createMockRepositories()
@@ -91,6 +92,8 @@ describe("Dashboard", () => {
     // Verificar que se llamó 4 veces sin error
     expect(viewModel.addRow).toHaveBeenCalledTimes(4)
   })
+=======
+>>>>>>> 586b31ba540b97088631ba57df0780db19d6c91a
 
   it("should call resetAll when reset button is clicked", async () => {
     const { mockProductRepo, mockRowRepo } = createMockRepositories()
@@ -139,6 +142,13 @@ describe("Dashboard", () => {
     const { mockProductRepo, mockRowRepo } = createMockRepositories()
     const viewModel = new DashboardViewModel(mockProductRepo, mockRowRepo)
     render(<Dashboard viewModel={viewModel} />)
+<<<<<<< HEAD
     expect(screen.getByText(/inditex row experience/i)).toBeInTheDocument()
+=======
+    expect(screen.getByText(/add row/i)).toBeInTheDocument()
+    expect(
+      document.querySelector('[data-testid="dashboard"]')
+    ).toBeInTheDocument()
+>>>>>>> 586b31ba540b97088631ba57df0780db19d6c91a
   })
 })
